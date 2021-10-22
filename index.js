@@ -66,7 +66,7 @@ app.listen(port, () => {
 
 db.connect((err) => {
     if (err){
-        throw err;
+        console.log(err);
     }
     console.log('MySQL is connected...')
 });
