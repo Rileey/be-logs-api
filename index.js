@@ -58,7 +58,7 @@ app.get("/api/expiredlogs", async (req, res) => {
 })
 
 
-    db.query(`DELETE FROM Logs where created_at < now() - interval 65 Minute`)
+    // db.query(`DELETE FROM Logs where created_at < now() - interval 65 Minute`)
 
 app.listen(port, () => {
     console.log(`Server listening to port http://localhost:${8080}`);
