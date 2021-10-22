@@ -1,4 +1,3 @@
-import cron from 'node-cron';
 import express from 'express';
 import db from './connection.js';
 
@@ -58,17 +57,8 @@ app.get("/api/expiredlogs", async (req, res) => {
     })
 })
 
-app.get("/api/expiredlogs", async (req, res) => {
-    db.query(`DELETE * FROM Logs where created_at < now() - interval 65 Minute`, (err, result) => {
-        // `select * from accounts where date_added < now() - interval '15 Mins'`
-        if ( !err ){
-            res.json({data: result});
-        } else {
-            console.log(err.message);
-        }
-        db.end;
-    })
-})
+
+    db.query(`DELETE FROM Logs where created_at < now() - interval 65 Minute`)
 
 app.listen(port, () => {
     console.log(`Server listening to port http://localhost:${8080}`);
