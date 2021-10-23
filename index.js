@@ -114,25 +114,3 @@ app.get("/expiringlogs", async (req, res) => {
 app.listen(port, () => {
     console.log(`Server listening to port http://localhost:${8080}`);
 });
-
-
-function handleDisconnect() {
-db.connect((err) => {
-    if (err){
-        console.log(err.message);
-        setTimeout(handleDisconnect, 2000);
-    }
-    console.log('MySQL is connected...')
-});
-
-db.on('error', function(err) {
-    console.log('db error', err.message);
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
-    handleDisconnect();
-} else {
-    throw err;
-}
-});
-}
-
-handleDisconnect();
