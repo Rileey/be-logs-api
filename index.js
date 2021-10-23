@@ -54,7 +54,7 @@ app.get("/messages", (req, res) => {
 
 // Activelogs url shows data less than six months in the database
 
-app.get("/api/activelogs", async (req, res) => {
+app.get("/activelogs", async (req, res) => {
     db.query(`SELECT * FROM Logs where created_at > now() - interval 6 Month`, (err, result) => {
         if ( !err ){
             res.send(result);
@@ -67,7 +67,7 @@ app.get("/api/activelogs", async (req, res) => {
 
 // Archivedlogs url shows data more than six months in the database
 
-app.get("/api/archivedlogs", async (req, res) => {
+app.get("/archivedlogs", async (req, res) => {
     db.query(`SELECT * FROM Logs where created_at = now() - interval 183 Day`, (err, result) => {
         if ( !err ){
             res.send(result);
@@ -80,7 +80,7 @@ app.get("/api/archivedlogs", async (req, res) => {
 
 // Expiringlogs url shows data more than six months and a week in the database
 
-app.get("/api/expiringlogs", async (req, res) => {
+app.get("/expiringlogs", async (req, res) => {
     db.query(`SELECT * FROM Logs where created_at < now() - interval 190 Day`, (err, result) => {
         if ( !err ){
             res.send(result);
