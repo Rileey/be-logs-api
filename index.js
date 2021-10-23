@@ -1,6 +1,7 @@
 import cron from 'node-cron'
 import express from 'express';
 import db from './connection.js';
+import {dummydata1, dummydata2} from './dummydata.js';
 
 
 const app = express();
@@ -65,10 +66,14 @@ app.get("/activelogs", async (req, res) => {
     })
 })
 
+app.get("/workinglogs", async (req, res) => {
+    res.json({dummydata1});
+})
+
 // Archivedlogs url shows data more than six months in the database
 
 app.get("/archivedlogs", async (req, res) => {
-    db.query(`SELECT * FROM Logs where created_at = now() - interval 183 Day`, (err, result) => {
+    db.query(`SELECT * FROM Logs where created_at <= now() - interval 183 Day`, (err, result) => {
         if ( !err ){
             res.send(result);
         } else {
@@ -76,6 +81,10 @@ app.get("/archivedlogs", async (req, res) => {
         }
         db.end;
     })
+})
+
+app.get("/keptlogs", async (req, res) => {
+    res.json({dummydata2});
 })
 
 // Expiringlogs url shows data more than six months and a week in the database
@@ -112,9 +121,24 @@ app.listen(port, () => {
     console.log(`Server listening to port http://localhost:${8080}`);
 });
 
+
+function handleDisconnect() {
 db.connect((err) => {
     if (err){
         console.log(err);
+        setTimeout(handleDisconnect, 2000);
     }
     console.log('MySQL is connected...')
 });
+
+db.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+    handleDisconnect();
+} else {
+    throw err;
+}
+});
+}
+
+handleDisconnect();
