@@ -1,4 +1,5 @@
 import cron from 'node-cron'
+import cors from 'cors';
 import express from 'express';
 import db from './connection.js';
 import {dummydata1, dummydata2} from './dummydata.js';
@@ -6,7 +7,8 @@ import {dummydata1, dummydata2} from './dummydata.js';
 
 const app = express();
 
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
