@@ -32,7 +32,6 @@ app.get("/", async (req, res) => {
 //         } else {
 //             throw err;
 //         }
-//         db.end;
 //     })
 // })
 
@@ -48,7 +47,6 @@ app.get("/messages", (req, res) => {
         } else {
             throw err;
         }
-        db.end;
     })
 })
 
@@ -62,7 +60,6 @@ app.get("/activelogs", async (req, res) => {
         } else {
             throw err;
         }
-        db.end;
     })
 })
 
@@ -79,7 +76,6 @@ app.get("/archivedlogs", async (req, res) => {
         } else {
             throw err;
         }
-        db.end;
     })
 })
 
@@ -96,7 +92,6 @@ app.get("/expiringlogs", async (req, res) => {
         } else {
             throw err;
         }
-        db.end;
     })
 
     cron.schedule('0 0 7 * *', function() {
@@ -106,7 +101,6 @@ app.get("/expiringlogs", async (req, res) => {
             } else {
                 throw err;
             }
-            db.end;
         })  
     })
 })
