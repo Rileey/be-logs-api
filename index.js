@@ -1,3 +1,4 @@
+import cron from 'node-cron'
 import express from 'express';
 import db from './connection.js';
 
@@ -11,54 +12,101 @@ app.use(express.urlencoded({
 
 const port = process.env.PORT || 8080
 
-// Schedule tasks to be run on the server.
-// cron.schedule('* * * * *', function() {
-//     console.log('running a task every minute');
-// });
+
+//root directory
 
 app.get("/", async (req, res) => {
     res.json({ status: "We are live and ready to go"});
 });
 
-app.get("/api/activelogs", async (req, res) => {
-    db.query(`SELECT * FROM Logs where created_at > now() - interval 40 Minute`, (err, result) => {
-        // `select * from accounts where date_added < now() - interval '15 Mins'`
+
+//Query to create Logs table.
+
+// app.get("/logs", (req, res) => {
+//     const sql= `CREATE TABLE Logs (id int auto_increment primary key, email varchar (255) not null, msisdn bigint not null, created_at timestamp default current_timestamp, updated_at timestamp default current_timestamp on update current_timestamp);`
+//     db.query(sql, (err, results) => {
+//         if ( !err ){
+//             console.log(results);
+//             res.send("Logs table has been created...")
+//         } else {
+//             throw err;
+//         }
+//         db.end;
+//     })
+// })
+
+
+// Query to create messages table
+
+app.get("/messages", (req, res) => {
+    const sql = `CREATE TABLE messages (id INT PRIMARY KEY AUTO_INCREMENT, message VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL)`
+    db.query(sql, (err, results) => {
         if ( !err ){
-            res.send(result);
+            console.log(results);
+            res.send("messages table has been created...")
         } else {
-            console.log(err.message);
+            throw err;
         }
         db.end;
     })
 })
+
+
+// Activelogs url shows data less than six months in the database
+
+app.get("/api/activelogs", async (req, res) => {
+    db.query(`SELECT * FROM Logs where created_at > now() - interval 6 Month`, (err, result) => {
+        if ( !err ){
+            res.send(result);
+        } else {
+            throw err;
+        }
+        db.end;
+    })
+})
+
+// Archivedlogs url shows data more than six months in the database
 
 app.get("/api/archivedlogs", async (req, res) => {
-    db.query(`SELECT * FROM Logs where created_at < now() - interval 40 Minute`, (err, result) => {
-        // `select * from accounts where date_added < now() - interval '15 Mins'`
+    db.query(`SELECT * FROM Logs where created_at = now() - interval 183 Day`, (err, result) => {
         if ( !err ){
             res.send(result);
         } else {
-            console.log(err.message);
+            throw err;
         }
         db.end;
     })
 })
 
+// Expiringlogs url shows data more than six months and a week in the database
 
-app.get("/api/expiredlogs", async (req, res) => {
-    db.query(`SELECT * FROM Logs where created_at < now() - interval 60 Minute`, (err, result) => {
-        // `select * from accounts where date_added < now() - interval '15 Mins'`
+app.get("/api/expiringlogs", async (req, res) => {
+    db.query(`SELECT * FROM Logs where created_at < now() - interval 190 Day`, (err, result) => {
         if ( !err ){
             res.send(result);
         } else {
-            console.log(err.message);
+            throw err;
         }
         db.end;
+    })
+
+    cron.schedule('0 0 7 * *', function() {
+        db.query(`DELETE FROM Logs where created_at < now() - interval 190 Day`, (err, result) => {
+            if ( !err ){
+                res.send(result);
+            } else {
+                throw err;
+            }
+            db.end;
+        })  
     })
 })
 
 
-    // db.query(`DELETE FROM Logs where created_at < now() - interval 65 Minute`)
+//    --------------Script for permanently deleting data older than 6 months and a week------------
+//     db.query(`DELETE FROM Logs where created_at < now() - interval 191 Day`)  
+
+
 
 app.listen(port, () => {
     console.log(`Server listening to port http://localhost:${8080}`);
